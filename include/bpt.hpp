@@ -348,8 +348,8 @@ private:
                     data_block_file.erase(cur.sons[x - 1]);
                     data_block_file.update(db, cur.sons[x]);
 
-                    memmove(cur.sons + x - 1, cur.sons + x, (cur.sz + 1 - x) * sizeof(int));
-                    memmove(cur.keys + x - 1, cur.keys + x, (cur.sz - x) * sizeof(size_t));
+                    memmove(cur.sons + x - 1, cur.sons + x, (cur.sz - x) * sizeof(int));
+                    memmove(cur.keys + x - 1, cur.keys + x, (cur.sz - 1 - x) * sizeof(size_t));
                     cur.sz--;
                     node_file.update(cur, nodeid);
                     // print(nodeid);
