@@ -21,10 +21,10 @@ template <
 > class b_plus_tree {
 private:
     static constexpr int BLOCK_SIZE = 4096;
-    static constexpr int M = 205; // 4M+16(M-1)+12=BLOCK_SIZE
-    static constexpr int L = (BLOCK_SIZE - 4 - 4) / (sizeof(Key) + sizeof(Value) + sizeof(size_t)) - 1;
-    // static constexpr int M = 3; // max son count
-    // static constexpr int L = 4; // max data in a data_block
+    // static constexpr int M = 205; // 4M+16(M-1)+12=BLOCK_SIZE
+    // static constexpr int L = (BLOCK_SIZE - 4 - 4) / (sizeof(Key) + sizeof(Value) + sizeof(size_t)) - 1;
+    static constexpr int M = 3; // max son count
+    static constexpr int L = 4; // max data in a data_block
     static constexpr int MIN_M = (M + 1) / 2; // this is the size of the just-split node
     static constexpr int MIN_L = (L + 1) / 2; // the is the size of the just-split data_block
 
@@ -127,6 +127,7 @@ private:
         if (!gone) {
             x = cur.sz;
         }
+        assert(0 <= x && x <= cur.sz); // SZ IS THE NUM OF KEYS
         // cout << "found x" << endl;
         if (cur.is_leaf) {
             insert_data_block(cur.sons[x], key, value, new_id, new_key);
@@ -143,7 +144,7 @@ private:
         cur.sons[x + 1] = new_id;
         cur.keys[x] = new_key;
         ++cur.sz;
-        if (cur.sz < M) {
+        if (cur.sz + 1 <= M) {
             node_file.update(cur, nodeid);
             ret_id = -1;
         } else { // split node
@@ -244,6 +245,10 @@ private:
      * and needs resizing from node cur
      */
     bool erase_node(int nodeid, const Key& key, const Value& value, bool& ret_toosmall) {
+        // cout << "trying to erase ";key.print();
+        // cout << "and value = " << value << "at node " << nodeid << endl;
+        // self_check(nodeid);
+        // cout << "checked " << nodeid << "ok1" << endl;
         size_t hash = Hash()(key);
         node cur(true);
         node_file.read(cur, nodeid);
@@ -251,6 +256,8 @@ private:
         bool toosmall = false, done = false;
         int x;
         size_t prev_key = 0;
+        // self_check(nodeid);
+        // cout << "checked " << nodeid << "ok2" << endl;
         for (int i = 0; i < cur.sz; i++) { // caution! there may be same elements
             if (prev_key <= hash && hash <= cur.keys[i]) {
                 if (cur.is_leaf) {
@@ -277,18 +284,24 @@ private:
         if (!done) {
             return false;
         }
+        // self_check(nodeid);
+        // cout << "checked " << nodeid << "ok3" << endl;
         if (toosmall) { // only when done is true is "toosmall" valid
             if (cur.sz == 0) { // cannot borrow or merge
                 ret_toosmall = true;
+                // cout << "return direct, nodeid = " << nodeid << endl;
                 return true;
             }
             if (cur.is_leaf) {
+                // cout << "entered isleaf, nodeid = " << nodeid << endl;
+                // print(nodeid);
                 // try borrowing
                 data_block db;
                 data_block_file.read(db, cur.sons[x]);
                 assert(db.sz == MIN_L - 1);
                 bool success = false;
                 if (x > 0) {
+                    // cout << "isleaf BRANCH #1" << endl;
                     data_block left_db;
                     data_block_file.read(left_db, cur.sons[x - 1]);
                     if (left_db.sz > MIN_L) {
@@ -303,6 +316,7 @@ private:
                     }
                 }
                 if (!success && x < cur.sz) {
+                    // cout << "isleaf BRANCH #2" << endl;
                     data_block right_db;
                     data_block_file.read(right_db, cur.sons[x + 1]);
                     if (right_db.sz > MIN_L) {
@@ -318,6 +332,7 @@ private:
                 }
 
                 if (!success) {// failed in borrowing, merge now
+                    // cout << "isleaf BRANCH #3" << endl;
                     // merge with left node (x > 0)
                     // merge with right node (x == 0)
                     if (x == 0) {
@@ -333,18 +348,28 @@ private:
                     data_block_file.erase(cur.sons[x - 1]);
                     data_block_file.update(db, cur.sons[x]);
 
-                    memmove(cur.sons + x - 1, cur.sons + x, (cur.sz - x) * sizeof(int));
-                    memmove(cur.keys + x - 1, cur.keys + x, (cur.sz - 1 - x) * sizeof(size_t));
+                    memmove(cur.sons + x - 1, cur.sons + x, (cur.sz + 1 - x) * sizeof(int));
+                    memmove(cur.keys + x - 1, cur.keys + x, (cur.sz - x) * sizeof(size_t));
                     cur.sz--;
                     node_file.update(cur, nodeid);
-                    if (cur.sz < MIN_M) {
+                    // print(nodeid);
+                    if (cur.sz + 1 < MIN_M) {
                         ret_toosmall = true;
                     }
                 }
+                // cout << "leaving isleaf, nodeid = " << nodeid << endl;
+                // cout << "checking\n";
+                // self_check(nodeid);
+                // cout << "checked" << endl;
             } else { // if (cur.isleaf)
+                // cout << "entered else branch" << endl;
                 // try borrowing
                 node son(true);
                 node_file.read(son, cur.sons[x]);
+                // print(nodeid);
+                // print(cur.sons[x]);
+                // self_check(nodeid);
+                // cout << "son.sz = " << son.sz << "     " << "MIN_M - 1 - 1 = " << MIN_M - 1 - 1 << endl;
                 assert(son.sz == MIN_M - 1 - 1); // SZ IS NUM OF KEYS!!!!!
                 bool success = false;
                 if (x > 0) {
@@ -482,6 +507,7 @@ public:
             new_root.sons[1] = new_id;
             rootid = node_file.write(new_root);
         }
+        self_check();
     }
 
     void erase(const Key& key, const Value& value) { // may not exist
@@ -496,6 +522,7 @@ public:
                 rootid = root.sons[0];
             }
         }
+        self_check();
     }
 
     /**
@@ -515,6 +542,30 @@ public:
             }
             cout << found[found.size() - 1] << endl;
             found.clear();
+        }
+        self_check();
+    }
+
+    /**
+     * self checks that if any node have two same sons (which is of course a bug)
+    */
+    void self_check(int nodeid = -1) {
+        if (nodeid == -1) {
+            nodeid = rootid;
+        }
+        node cur(true);
+        node_file.read(cur, nodeid);
+        for (int i = 1; i <= cur.sz; i++) {
+            if (cur.sons[i] == cur.sons[i - 1]) {
+                cout << "SAME SONS ERROR AT NODEID " << nodeid << endl;
+                exit(0);
+                // return;
+            }
+        }
+        if (!cur.is_leaf) {
+            for (int i = 0; i <= cur.sz; i++) {
+                self_check(cur.sons[i]);
+            }
         }
     }
 
