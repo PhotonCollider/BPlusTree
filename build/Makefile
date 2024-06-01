@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named bpt
+# Target rules for targets named code
 
 # Build rule for target.
-bpt: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 bpt
-.PHONY : bpt
+code: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 code
+.PHONY : code
 
 # fast build rule for target.
-bpt/fast:
-	$(MAKE) -f CMakeFiles/bpt.dir/build.make CMakeFiles/bpt.dir/build
-.PHONY : bpt/fast
+code/fast:
+	$(MAKE) -f CMakeFiles/code.dir/build.make CMakeFiles/code.dir/build
+.PHONY : code/fast
 
-src/test.o: src/test.cpp.o
+src/code.o: src/code.cpp.o
 
-.PHONY : src/test.o
+.PHONY : src/code.o
 
 # target to build an object file
-src/test.cpp.o:
-	$(MAKE) -f CMakeFiles/bpt.dir/build.make CMakeFiles/bpt.dir/src/test.cpp.o
-.PHONY : src/test.cpp.o
+src/code.cpp.o:
+	$(MAKE) -f CMakeFiles/code.dir/build.make CMakeFiles/code.dir/src/code.cpp.o
+.PHONY : src/code.cpp.o
 
-src/test.i: src/test.cpp.i
+src/code.i: src/code.cpp.i
 
-.PHONY : src/test.i
+.PHONY : src/code.i
 
 # target to preprocess a source file
-src/test.cpp.i:
-	$(MAKE) -f CMakeFiles/bpt.dir/build.make CMakeFiles/bpt.dir/src/test.cpp.i
-.PHONY : src/test.cpp.i
+src/code.cpp.i:
+	$(MAKE) -f CMakeFiles/code.dir/build.make CMakeFiles/code.dir/src/code.cpp.i
+.PHONY : src/code.cpp.i
 
-src/test.s: src/test.cpp.s
+src/code.s: src/code.cpp.s
 
-.PHONY : src/test.s
+.PHONY : src/code.s
 
 # target to generate assembly for a file
-src/test.cpp.s:
-	$(MAKE) -f CMakeFiles/bpt.dir/build.make CMakeFiles/bpt.dir/src/test.cpp.s
-.PHONY : src/test.cpp.s
+src/code.cpp.s:
+	$(MAKE) -f CMakeFiles/code.dir/build.make CMakeFiles/code.dir/src/code.cpp.s
+.PHONY : src/code.cpp.s
 
 # Help Target
 help:
@@ -158,10 +158,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... bpt"
-	@echo "... src/test.o"
-	@echo "... src/test.i"
-	@echo "... src/test.s"
+	@echo "... code"
+	@echo "... src/code.o"
+	@echo "... src/code.i"
+	@echo "... src/code.s"
 .PHONY : help
 
 

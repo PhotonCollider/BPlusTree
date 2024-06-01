@@ -21,10 +21,10 @@ template <
 > class b_plus_tree {
 private:
     static constexpr int BLOCK_SIZE = 4096;
-    // static constexpr int M = 205; // 4M+16(M-1)+12=BLOCK_SIZE
-    // static constexpr int L = (BLOCK_SIZE - 4 - 4) / (sizeof(Key) + sizeof(Value) + sizeof(size_t)) - 1;
-    static constexpr int M = 3; // max son count
-    static constexpr int L = 4; // max data in a data_block
+    static constexpr int M = 205; // 4M+16(M-1)+12=BLOCK_SIZE
+    static constexpr int L = (BLOCK_SIZE - 4 - 4) / (sizeof(Key) + sizeof(Value) + sizeof(size_t)) - 1;
+    // static constexpr int M = 3; // max son count
+    // static constexpr int L = 4; // max data in a data_block
     static constexpr int MIN_M = (M + 1) / 2; // this is the size of the just-split node
     static constexpr int MIN_L = (L + 1) / 2; // the is the size of the just-split data_block
 
@@ -101,18 +101,18 @@ private:
         node cur(true);
         node_file.read(cur, nodeid);
 
-        if (cur.sz == 0) {
-            cur.sz = 1;
-            cur.keys[0] = hash;
+        // if (cur.sz == 0) {
+        //     cur.sz = 1;
+        //     cur.keys[0] = hash;
 
-            data_block db;
-            db.sz = 1;
-            db.data[0] = { hash, key, value };
-            cur.sons[1] = data_block_file.write(db);
-            node_file.update(cur, nodeid);
-            ret_id = -1;
-            return;
-        }
+        //     data_block db;
+        //     db.sz = 1;
+        //     db.data[0] = { hash, key, value };
+        //     cur.sons[1] = data_block_file.write(db);
+        //     node_file.update(cur, nodeid);
+        //     ret_id = -1;
+        //     return;
+        // }
 
         bool gone = false;
         int new_id, x;
@@ -226,7 +226,7 @@ private:
             }
             prev_key = cur.keys[i];
         }
-        if (cur.keys[cur.sz - 1] <= hash) {
+        if (cur.sz == 0 || cur.keys[cur.sz - 1] <= hash) {
             if (cur.is_leaf) {
                 find_data_block(cur.sons[cur.sz], key);
             } else {
@@ -265,7 +265,7 @@ private:
             }
             prev_key = cur.keys[i];
         }
-        if (!done && cur.keys[cur.sz - 1] <= hash) {
+        if (!done && (cur.sz == 0 || cur.keys[cur.sz - 1] <= hash)) {
             x = cur.sz;
             if (cur.is_leaf) {
                 done = erase_data_block(cur.sons[cur.sz], key, value, toosmall);
@@ -322,7 +322,7 @@ private:
                     // merge with right node (x == 0)
                     if (x == 0) {
                         x = 1; // now we only need to eat the left data_block of x
-                        assert(cur.sz >= 2); // or x = 1 would be faulty
+                        assert(cur.sz >= 1); // or x = 1 would be faulty
                         data_block_file.read(db, cur.sons[x]);
                     }
                     data_block left_db;

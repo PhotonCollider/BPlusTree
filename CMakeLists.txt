@@ -13,7 +13,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # create a variable which includes needed source files
 set(MY_SOURCES
-  ${PROJECT_SOURCE_DIR}/src/test.cpp
+  ${PROJECT_SOURCE_DIR}/src/code.cpp
 )
 
 # specify an executable, 

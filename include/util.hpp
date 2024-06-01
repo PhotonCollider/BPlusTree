@@ -2,6 +2,7 @@
 #define SJTU_UTIL_HPP
 
 #include <cstddef>
+#include <iostream>
 
 namespace sjtu {
 /*
@@ -71,9 +72,9 @@ public:
     }
     void print() const {
         for (int i = 0; i < sz; i++) {
-            cout << a[i];
+            std::cout << a[i];
         }
-        cout << endl;
+        std::cout << std::endl;
     }
     size_t hash() const {
         size_t ret = 0;

@@ -1,3 +1,3 @@
 /home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles/rebuild_cache.dir
 /home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles/edit_cache.dir
-/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles/bpt.dir
+/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles/code.dir
