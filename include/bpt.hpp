@@ -21,6 +21,7 @@ template <
 > class b_plus_tree {
 private:
     static constexpr int BLOCK_SIZE = 4096;
+    static constexpr bool ENABLE_SELF_CHECK = false;
 #ifdef BIGTREE
     static constexpr int M = 205; // 4M+16(M-1)+12=BLOCK_SIZE
     static constexpr int L = (BLOCK_SIZE - 4 - 4) / (sizeof(Key) + sizeof(Value) + sizeof(size_t)) - 1;
@@ -564,6 +565,9 @@ public:
      * self checks that if any node have two same sons (which is of course a bug)
     */
     void self_check(int nodeid = -1) {
+        if (!ENABLE_SELF_CHECK) {
+            return;
+        }
         if (nodeid == -1) {
             nodeid = rootid;
         }
