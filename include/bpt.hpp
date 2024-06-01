@@ -10,7 +10,7 @@
 #include "file_io.hpp"
 #include "vector.hpp"
 
-using std::cin, std::cout, std::endl; // DEBUG
+using std::cout, std::endl;
 
 namespace sjtu {
 

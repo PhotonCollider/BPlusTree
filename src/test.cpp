@@ -17,12 +17,21 @@ int main() {
     // file << 'a';
     // cout << file.tellp();
     // file.close();
-    // b_plus_tree bpt;
-    // for (int i = 1; i <= 1; i++) {
-    //     bpt.insert("nice", 111);
-        // bpt.print();
-        // separate();
-    // }
+
+    b_plus_tree bpt;
+    // sjtu::string str = "aaaaaaaaaaaaaaaaaaaaaaaaaa";
+    sjtu::string str = "zzzzzzzzzzzzzzzzzzzzzzzzzz";
+    for (int i = 8000; i >= 1; i--) {
+        bpt.insert(str, i);
+        --str;
+    }
+    bpt.find("xzzzzzzzzzzzzzzzzzzzzzzzzz");
+    bpt.erase("xzzzzzzzzzzzzzzzzzzzzzzzzz", 8000);
+    bpt.find("xzzzzzzzzzzzzzzzzzzzzzzzzz");
+    bpt.erase("xzzzzzzzzzzzzzzzzzzzzzzzzz", 7998);
+    bpt.find("xzzzzzzzzzzzzzzzzzzzzzzzzz");
+    bpt.erase("xzzzzzzzzzzzzzzzzzzzzzzzzz", 7998);
+    bpt.find("xzzzzzzzzzzzzzzzzzzzzzzzzz");
     // bpt.print();
     // separate();
     // bpt.insert("nipse", 16);
@@ -55,30 +64,5 @@ int main() {
     // separate();
     // bpt.find("ppppppp");
 
-
-
-
-
-
-    b_plus_tree bpt;
-    /*
-8
-insert FlowersForAlgernon 1966
-insert CppPrimer 2012
-insert Dune 2021
-insert CppPrimer 2001
-find CppPrimer
-find Java
-delete Dune 2021
-find Dune
-*/
-    // bpt.insert("FlowersForAlgernon", 1966);
-    // bpt.insert("CppPrimer", 2012);
-    // bpt.insert("Dune", 2021);
-    // bpt.insert("CppPrimer", 2001);
-    bpt.find("CppPrimer");
-    bpt.find("Java");
-    bpt.erase("Dune", 2021);
-    bpt.find("Dune");
     return 0;
 }

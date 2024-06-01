@@ -95,12 +95,22 @@ public:
         }
         return true;
     }
-    string& operator++() {
+    string& operator++() { // used only for 'a' to 'z'
         a[0]++;
         for (int i = 0; i < sz - 1; i++) {
             if (a[i] > 'z') {
                 a[i] = 'a';
                 a[i + 1]++;
+            }
+        }
+        return *this;
+    }
+    string& operator--() {
+        a[0]--;
+        for (int i = 0; i < sz - 1; i++) {
+            if (a[i] < 'a') {
+                a[i] = 'z';
+                a[i + 1]--;
             }
         }
         return *this;
