@@ -42,45 +42,38 @@ private:
     static constexpr size_t hash_MOD = 998244353;
 
     int sz;
-    char a[max_size];
+    char a[max_size + 1]; // '\0'
 public:
-    string(const char* s = nullptr) {
+    string(const char* s = nullptr) { // strlen(s) should <= maxsize
         if (s == nullptr) {
             sz = 0;
             a[0] = 0;
             return;
         }
         sz = -1;
-        bool flag = false;
-        for (int i = 0; i < max_size; i++) {
-            if (!flag && s[i] == 0) {
-                sz = i;
-                flag = true;
-            }
-            if (flag) {
-                a[i] = 0;
-            } else {
+        for (int i = 0; i <= max_size; i++) {
+            a[i] = s[i];
+            if (s[i]) {
                 a[i] = s[i];
+            } else {
+                sz = i;
+                break;
             }
         }
-        if (sz == -1) {
-            sz = max_size;
-        }
+        assert(sz != -1);
     }
     int size() const {
         return sz;
     }
     void print() const {
-        for (int i = 0; i < sz; i++) {
-            std::cout << a[i];
-        }
-        std::cout << std::endl;
+        std::cout << a;
     }
     size_t hash() const {
         size_t ret = 0;
         for (int i = 0; i < sz; i++) {
             ret *= hash_b;
             ret += a[i];
+            ret %= hash_MOD;
         }
         return ret;
     }
@@ -96,21 +89,35 @@ public:
         return true;
     }
     string& operator++() { // used only for 'a' to 'z'
-        a[0]++;
-        for (int i = 0; i < sz - 1; i++) {
+        a[sz - 1]++;
+        for (int i = sz - 1; i >= 0; i--) {
             if (a[i] > 'z') {
                 a[i] = 'a';
-                a[i + 1]++;
+                if (i > 0) {
+                    a[i - 1]++;
+                } else {
+                    std::cout << "string ++ overflow" << std::endl;
+                    exit(0);
+                }
+            } else {
+                break;
             }
         }
         return *this;
     }
     string& operator--() {
-        a[0]--;
-        for (int i = 0; i < sz - 1; i++) {
+        a[sz - 1]--;
+        for (int i = sz - 1; i >= 0; i--) {
             if (a[i] < 'a') {
                 a[i] = 'z';
-                a[i + 1]--;
+                if (i > 0) {
+                    a[i - 1]--;
+                } else {
+                    std::cout << "string -- overflow" << std::endl;
+                    exit(0);
+                }
+            } else {
+                break;
             }
         }
         return *this;

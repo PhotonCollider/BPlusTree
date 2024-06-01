@@ -1,11 +1,14 @@
+/**
+ * DONT FORGET TO SET BIGTREE AND CLEAR_AT_START
+*/
 #ifndef SJTU_FILE_IO_HPP
 #define SJTU_FILE_IO_HPP
+
+#define BIGTREE
 
 #include <fstream>
 #include <cassert>
 #include <iostream>
-using std::string;
-using std::fstream;
 using std::cin, std::cout, std::endl; // DEBUG
 
 template<class T>
@@ -19,13 +22,13 @@ private:
     static constexpr bool CLEAR_AT_START = false;
 
     vacantList* head = nullptr;
-    fstream file;
-    string file_name;
+    std::fstream file;
+    std::string file_name;
 
 public:
     File_Manager() = delete; // must specify path
 
-    File_Manager(const string& file_name) : file_name(file_name) {
+    File_Manager(const std::string& file_name) : file_name(file_name) {
         file.open(file_name);
         if (file.is_open()) {
             file.close();

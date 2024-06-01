@@ -21,10 +21,14 @@ template <
 > class b_plus_tree {
 private:
     static constexpr int BLOCK_SIZE = 4096;
-    // static constexpr int M = 205; // 4M+16(M-1)+12=BLOCK_SIZE
-    // static constexpr int L = (BLOCK_SIZE - 4 - 4) / (sizeof(Key) + sizeof(Value) + sizeof(size_t)) - 1;
-    static constexpr int M = 3; // max son count
-    static constexpr int L = 4; // max data in a data_block
+#ifdef BIGTREE
+    static constexpr int M = 205; // 4M+16(M-1)+12=BLOCK_SIZE
+    static constexpr int L = (BLOCK_SIZE - 4 - 4) / (sizeof(Key) + sizeof(Value) + sizeof(size_t)) - 1;
+#endif
+#ifndef BIGTREE
+    static constexpr int M = 5; // max son count
+    static constexpr int L = 20; // max data in a data_block
+#endif
     static constexpr int MIN_M = (M + 1) / 2; // this is the size of the just-split node
     static constexpr int MIN_L = (L + 1) / 2; // the is the size of the just-split data_block
 
@@ -247,7 +251,7 @@ private:
     bool erase_node(int nodeid, const Key& key, const Value& value, bool& ret_toosmall) {
         // cout << "trying to erase ";key.print();
         // cout << "and value = " << value << "at node " << nodeid << endl;
-        // self_check(nodeid);
+        self_check(nodeid);
         // cout << "checked " << nodeid << "ok1" << endl;
         size_t hash = Hash()(key);
         node cur(true);
@@ -284,7 +288,7 @@ private:
         if (!done) {
             return false;
         }
-        // self_check(nodeid);
+        self_check(nodeid);
         // cout << "checked " << nodeid << "ok3" << endl;
         if (toosmall) { // only when done is true is "toosmall" valid
             if (cur.sz == 0) { // cannot borrow or merge
@@ -306,12 +310,15 @@ private:
                     data_block_file.read(left_db, cur.sons[x - 1]);
                     if (left_db.sz > MIN_L) {
                         int transfer = left_db.sz - (db.sz + left_db.sz) / 2;
+                        memmove(db.data + transfer, db.data, sizeof(typename data_block::pair) * db.sz);
+                        memmove(db.data, left_db.data + left_db.sz - transfer, sizeof(typename data_block::pair) * transfer);
                         left_db.sz -= transfer;
                         db.sz += transfer;
-                        memmove(db.data + transfer, db.data, sizeof(typename data_block::pair) * transfer);
-                        memmove(db.data, left_db.data + left_db.sz, sizeof(typename data_block::pair) * transfer);
                         data_block_file.update(db, cur.sons[x]);
                         data_block_file.update(left_db, cur.sons[x - 1]);
+
+                        cur.keys[x - 1] = db.data[0].hash;
+                        node_file.update(cur, nodeid);
                         success = true;
                     }
                 }
@@ -321,12 +328,15 @@ private:
                     data_block_file.read(right_db, cur.sons[x + 1]);
                     if (right_db.sz > MIN_L) {
                         int transfer = (db.sz + right_db.sz) / 2 - db.sz;
+                        memmove(db.data + db.sz, right_db.data, sizeof(typename data_block::pair) * transfer);
+                        memmove(right_db.data, right_db.data + transfer, sizeof(typename data_block::pair) * (right_db.sz - transfer));
                         db.sz += transfer;
                         right_db.sz -= transfer;
-                        memmove(db.data + db.sz - transfer, right_db.data, sizeof(typename data_block::pair) * transfer);
-                        memmove(right_db.data, right_db.data + transfer, sizeof(typename data_block::pair) * right_db.sz);
                         data_block_file.update(db, cur.sons[x]);
                         data_block_file.update(right_db, cur.sons[x + 1]);
+
+                        cur.keys[x] = right_db.data[0].hash;
+                        node_file.update(cur, nodeid);
                         success = true;
                     }
                 }
@@ -348,8 +358,8 @@ private:
                     data_block_file.erase(cur.sons[x - 1]);
                     data_block_file.update(db, cur.sons[x]);
 
-                    memmove(cur.sons + x - 1, cur.sons + x, (cur.sz - x) * sizeof(int));
-                    memmove(cur.keys + x - 1, cur.keys + x, (cur.sz - 1 - x) * sizeof(size_t));
+                    memmove(cur.sons + x - 1, cur.sons + x, (cur.sz + 1 - x) * sizeof(int));
+                    memmove(cur.keys + x - 1, cur.keys + x, (cur.sz - x) * sizeof(size_t));
                     cur.sz--;
                     node_file.update(cur, nodeid);
                     // print(nodeid);
@@ -359,7 +369,7 @@ private:
                 }
                 // cout << "leaving isleaf, nodeid = " << nodeid << endl;
                 // cout << "checking\n";
-                // self_check(nodeid);
+                self_check(nodeid);
                 // cout << "checked" << endl;
             } else { // if (cur.isleaf)
                 // cout << "entered else branch" << endl;
@@ -368,7 +378,7 @@ private:
                 node_file.read(son, cur.sons[x]);
                 // print(nodeid);
                 // print(cur.sons[x]);
-                // self_check(nodeid);
+                self_check(nodeid);
                 // cout << "son.sz = " << son.sz << "     " << "MIN_M - 1 - 1 = " << MIN_M - 1 - 1 << endl;
                 assert(son.sz == MIN_M - 1 - 1); // SZ IS NUM OF KEYS!!!!!
                 bool success = false;
@@ -466,6 +476,9 @@ private:
         }
         if (done) {
             data_block_file.update(db, dbid);
+            // cout << "the erased data_block looks like this" << endl;
+            // print_db(dbid);
+            // cout << "the above is the erased data block" << endl;
             if (db.sz < MIN_L) {
                 ret_toosmall = true;
             }
@@ -510,7 +523,7 @@ public:
         self_check();
     }
 
-    void erase(const Key& key, const Value& value) { // may not exist
+    bool erase(const Key& key, const Value& value) { // may not exist
         bool root_toosmall = false;
         bool res = erase_node(rootid, key, value, root_toosmall);
         if (res) { // the criteria for toosmall is different from other nodes
@@ -523,6 +536,7 @@ public:
             }
         }
         self_check();
+        return res;
     }
 
     /**
@@ -619,8 +633,33 @@ public:
         cout << "Printing contents\n";
         for (int i = 0; i < db.sz; i++) {
             db.data[i].k.print();
+            cout << ' ';
         }
-        cout << endl;
+        cout << '\n' << endl;
+    }
+
+    int size(int nodeid = -1) {
+        if (nodeid == -1) {
+            nodeid = rootid;
+        }
+        node cur(true);
+        node_file.read(cur, nodeid);
+        int ans = 0;
+
+        for (int i = 0; i <= cur.sz; i++) {
+            if (!cur.is_leaf) {
+                ans += size(cur.sons[i]);
+            } else {
+                ans += size_db(cur.sons[i]);
+            }
+        }
+        return ans;
+    }
+
+    int size_db(int dbid) {
+        data_block db;
+        data_block_file.read(db, dbid);
+        return db.sz;
     }
 };
 
