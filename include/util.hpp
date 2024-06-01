@@ -94,6 +94,16 @@ public:
         }
         return true;
     }
+    string& operator++() {
+        a[0]++;
+        for (int i = 0; i < sz - 1; i++) {
+            if (a[i] > 'z') {
+                a[i] = 'a';
+                a[i + 1]++;
+            }
+        }
+        return *this;
+    }
 };
 
 class string_hash {

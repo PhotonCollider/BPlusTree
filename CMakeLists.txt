@@ -6,7 +6,7 @@ project(BPlusTree)
 
 # set C++ Version & executable output path
 set(CMAKE_CXX_STANDARD 17)
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 # make your compiler aware of header directory
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -18,4 +18,4 @@ set(MY_SOURCES
 
 # specify an executable, 
 # build from the specified source files
-add_executable(bpt ${MY_SOURCES})
+add_executable(code ${MY_SOURCES})
