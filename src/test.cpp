@@ -23,19 +23,23 @@ int main() {
     // cout << file.tellp();
     // file.close();
 
-    const int N = 30000;
+    const int N = 50000;
 
     time_t time1 = time(NULL);
     {
-        sjtu::string str = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+        sjtu::string str = "zzzzz";
         for (int i = N; i >= 1; i--) {
             bpt.insert(str, i);
             --str;
+            // cout << "inserted " << N - i + 1 << endl;
         }
     }
+    cout << "ALL INSERTED" << endl;
+    assert(bpt.size() == N);
 
-    // assert(bpt.size() == N);
     time_t time2 = time(NULL);
+    // int a;
+    // cin >> a;
     // print();
     // bpt.find("xzzzzzz");
     // bpt.erase("xzzzzzzzzzzzzzzzzzzzzzzzzz", N);
@@ -44,17 +48,23 @@ int main() {
     // todo : solve same elements
     {
         int successcnt = 0;
-        sjtu::string str = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+        sjtu::string str = "zzzzz";
         for (int i = N; i >= 1; i--, --str) {
             // if (i == 41) {
             //                     print();
             // }
             if (bpt.erase(str, i)) {
+                // int sz = bpt.size();
                 successcnt++;
                 // cout << "successfully erased ";
                 // str.print();
                 // cout << endl;
                 // print();
+                // cout << "erased " << N - i + 1 << endl;
+                // if (sz != i - 1) {
+                //     cout << i - 1 << " bpt: " << sz << endl;
+                //     exit(0);
+                // }
             } else {
                 cout << "could not erase ";
                 str.print();

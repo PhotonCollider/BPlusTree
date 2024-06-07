@@ -4,6 +4,7 @@
 #ifndef SJTU_FILE_IO_HPP
 #define SJTU_FILE_IO_HPP
 
+#define BPT_DEBUG_FUNCTIONS
 #define BIGTREE
 
 #include <fstream>
@@ -75,6 +76,7 @@ public:
         int index = file.tellp();
         file.write(reinterpret_cast<const char*>(&t), sizeof(T));
         file.close();
+        assert(index >= 0);
         return index;
     }
 
