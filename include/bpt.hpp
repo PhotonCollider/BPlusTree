@@ -67,6 +67,10 @@ private:
         data_block() {
             sz = 0;
         }
+
+        void sort() {
+            qsort(data, data + sz);
+        }
     };
 
     int rootid;
@@ -142,21 +146,26 @@ private:
         data_block db;
         data_block_file.read(db, dbid);
 
-        bool gone = false;
-        int x;
-        for (int i = 0; i < db.sz; i++) {
-            if (hash < db.data[i].hash) {
-                gone = true;
-                x = i;
-                break;
-            }
-        }
-        if (!gone) {
-            x = db.sz;
-        }
-        memmove(db.data + x + 1, db.data + x, (db.sz - x) * sizeof(typename data_block::pair));
-        db.sz++;
-        db.data[x] = { Hash()(key), key, value };
+        // this is wickedly fast!
+        db.data[db.sz++] = { Hash()(key), key, value };
+        db.sort();
+
+        // // this is wickedly slow!
+        // bool gone = false;
+        // int x;
+        // for (int i = 0; i < db.sz; i++) {
+        //     if (hash < db.data[i].hash) {
+        //         gone = true;
+        //         x = i;
+        //         break;
+        //     }
+        // }
+        // if (!gone) {
+        //     x = db.sz;
+        // }
+        // memmove(db.data + x + 1, db.data + x, (db.sz - x) * sizeof(typename data_block::pair));
+        // db.sz++;
+        // db.data[x] = { Hash()(key), key, value };
 
         if (db.sz <= L) {
             data_block_file.update(db, dbid);
@@ -620,10 +629,10 @@ public:
         data_block db;
         data_block_file.read(db, dbid);
         return db.sz;
-    }
+        }
 #endif
 
-};
+    };
 
 }
 
