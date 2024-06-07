@@ -67,10 +67,6 @@ private:
         data_block() {
             sz = 0;
         }
-
-        void sort() {
-            qsort(data, data + sz);
-        }
     };
 
     int rootid;
@@ -144,11 +140,26 @@ private:
      * otherwise return -1
      */
     void insert_data_block(int dbid, const Key& key, const Value& value, int& ret_id, size_t& ret_key) {
+        size_t hash = Hash()(key);
         data_block db;
         data_block_file.read(db, dbid);
 
-        db.data[db.sz++] = { Hash()(key), key, value };
-        db.sort();
+        bool gone = false;
+        int x;
+        for (int i = 0; i < db.sz; i++) {
+            if (hash < db.data[i].hash) {
+                gone = true;
+                x = i;
+                break;
+            }
+        }
+        if (!gone) {
+            x = db.sz;
+        }
+        memmove(db.data + x + 1, db.data + x, (db.sz - x) * sizeof(typename data_block::pair));
+        db.sz++;
+        db.data[x] = { Hash()(key), key, value };
+
         if (db.sz <= L) {
             data_block_file.update(db, dbid);
             ret_id = -1;
