@@ -57,27 +57,27 @@ include CMakeFiles/code.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/code.dir/flags.make
 
-CMakeFiles/code.dir/src/test.cpp.o: CMakeFiles/code.dir/flags.make
-CMakeFiles/code.dir/src/test.cpp.o: ../src/test.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/code.dir/src/test.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/code.dir/src/test.cpp.o -c "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/src/test.cpp"
+CMakeFiles/code.dir/src/code.cpp.o: CMakeFiles/code.dir/flags.make
+CMakeFiles/code.dir/src/code.cpp.o: ../src/code.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/code.dir/src/code.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/code.dir/src/code.cpp.o -c "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/src/code.cpp"
 
-CMakeFiles/code.dir/src/test.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/code.dir/src/test.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/src/test.cpp" > CMakeFiles/code.dir/src/test.cpp.i
+CMakeFiles/code.dir/src/code.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/code.dir/src/code.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/src/code.cpp" > CMakeFiles/code.dir/src/code.cpp.i
 
-CMakeFiles/code.dir/src/test.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/code.dir/src/test.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/src/test.cpp" -o CMakeFiles/code.dir/src/test.cpp.s
+CMakeFiles/code.dir/src/code.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/code.dir/src/code.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/src/code.cpp" -o CMakeFiles/code.dir/src/code.cpp.s
 
 # Object files for target code
 code_OBJECTS = \
-"CMakeFiles/code.dir/src/test.cpp.o"
+"CMakeFiles/code.dir/src/code.cpp.o"
 
 # External object files for target code
 code_EXTERNAL_OBJECTS =
 
-../code: CMakeFiles/code.dir/src/test.cpp.o
+../code: CMakeFiles/code.dir/src/code.cpp.o
 ../code: CMakeFiles/code.dir/build.make
 ../code: CMakeFiles/code.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../code"

@@ -83,8 +83,7 @@ private:
      * and return its nodeid in ret_id, the individual key in ret_key
      * otherwise ret_id = -1
      */
-    void insert_node(int nodeid, const Key& key, const Value& value, int& ret_id, size_t& ret_key) {
-        size_t hash = Hash()(key);
+    void insert_node(int nodeid, const size_t& hash, const Key& key, const Value& value, int& ret_id, size_t& ret_key) {
         node cur(true);
         node_file.read(cur, nodeid);
 
@@ -103,9 +102,9 @@ private:
         }
         assert(0 <= x && x <= cur.sz);
         if (cur.is_leaf) {
-            insert_data_block(cur.sons[x], key, value, new_id, new_key);
+            insert_data_block(cur.sons[x], hash, key, value, new_id, new_key);
         } else {
-            insert_node(cur.sons[x], key, value, new_id, new_key);
+            insert_node(cur.sons[x], hash, key, value, new_id, new_key);
         }
         if (new_id == -1) {
             ret_id = -1;
@@ -139,8 +138,7 @@ private:
      * if so, split a half into a new data block and return its dbid
      * otherwise return -1
      */
-    void insert_data_block(int dbid, const Key& key, const Value& value, int& ret_id, size_t& ret_key) {
-        size_t hash = Hash()(key);
+    void insert_data_block(int dbid, const size_t& hash, const Key& key, const Value& value, int& ret_id, size_t& ret_key) {
         data_block db;
         data_block_file.read(db, dbid);
 
@@ -179,8 +177,7 @@ private:
      * for every data in the block whose key is key
      * put its value in the vector found
      */
-    void find_data_block(int dbid, const Key& key) {
-        size_t hash = Hash()(key);
+    void find_data_block(int dbid, const size_t& hash, const Key& key) {
         data_block db;
         data_block_file.read(db, dbid);
 
@@ -195,9 +192,8 @@ private:
      * finds all data with its key == key, and put them in the vector found
      * vector found is managed by the public find function
      */
-    void find_node(int nodeid, const Key& key) {
+    void find_node(int nodeid, const size_t& hash, const Key& key) {
         // cout << "finding in node " << nodeid << endl;
-        size_t hash = Hash()(key);
         node cur(true);
         node_file.read(cur, nodeid);
 
@@ -205,18 +201,18 @@ private:
         for (int i = 0; i < cur.sz; i++) { // caution! there may be same elements
             if (prev_key <= hash && hash <= cur.keys[i]) {
                 if (cur.is_leaf) {
-                    find_data_block(cur.sons[i], key);
+                    find_data_block(cur.sons[i], hash, key);
                 } else {
-                    find_node(cur.sons[i], key);
+                    find_node(cur.sons[i], hash, key);
                 }
             }
             prev_key = cur.keys[i];
         }
         if (cur.sz == 0 || cur.keys[cur.sz - 1] <= hash) {
             if (cur.is_leaf) {
-                find_data_block(cur.sons[cur.sz], key);
+                find_data_block(cur.sons[cur.sz], hash, key);
             } else {
-                find_node(cur.sons[cur.sz], key);
+                find_node(cur.sons[cur.sz], hash, key);
             }
         }
     }
@@ -229,8 +225,7 @@ private:
      * bool& toosmall serves as a return value, toosmall=true shows that the erase made sons[x] too small
      * and needs resizing from node cur
      */
-    bool erase_node(int nodeid, const Key& key, const Value& value, bool& ret_toosmall) {
-        size_t hash = Hash()(key);
+    bool erase_node(int nodeid, const size_t& hash, const Key& key, const Value& value, bool& ret_toosmall) {
         node cur(true);
         node_file.read(cur, nodeid);
 
@@ -240,9 +235,9 @@ private:
         for (int i = 0; i < cur.sz; i++) { // caution! there may be same elements
             if (prev_key <= hash && hash <= cur.keys[i]) {
                 if (cur.is_leaf) {
-                    done = erase_data_block(cur.sons[i], key, value, toosmall);
+                    done = erase_data_block(cur.sons[i], hash, key, value, toosmall);
                 } else {
-                    done = erase_node(cur.sons[i], key, value, toosmall);
+                    done = erase_node(cur.sons[i], hash, key, value, toosmall);
                 }
                 if (done) {
                     x = i;
@@ -254,9 +249,9 @@ private:
         if (!done && (cur.sz == 0 || cur.keys[cur.sz - 1] <= hash)) {
             x = cur.sz;
             if (cur.is_leaf) {
-                done = erase_data_block(cur.sons[cur.sz], key, value, toosmall);
+                done = erase_data_block(cur.sons[cur.sz], hash, key, value, toosmall);
             } else {
-                done = erase_node(cur.sons[cur.sz], key, value, toosmall);
+                done = erase_node(cur.sons[cur.sz], hash, key, value, toosmall);
             }
         }
 
@@ -417,8 +412,7 @@ private:
      * return true if succesfully erased, this will skip erasing the same data in other nodes
      * since the problem guaranteed that {key, value} would be unique
      */
-    bool erase_data_block(int dbid, const Key& key, const Value& value, bool& ret_toosmall) {
-        size_t hash = Hash()(key);
+    bool erase_data_block(int dbid, const size_t& hash, const Key& key, const Value& value, bool& ret_toosmall) {
         data_block db;
         data_block_file.read(db, dbid);
 
@@ -464,7 +458,8 @@ public:
     void insert(const Key& key, const Value& value) {
         int new_id;
         size_t new_key;
-        insert_node(rootid, key, value, new_id, new_key);
+        size_t hash = Hash()(key);
+        insert_node(rootid, hash, key, value, new_id, new_key);
         if (new_id != -1) { // root splits
             // cout << "ROOT SPLITS!!!" << endl;
             node new_root(false);
@@ -477,8 +472,9 @@ public:
     }
 
     bool erase(const Key& key, const Value& value) { // may not exist
+        size_t hash = Hash()(key);
         bool root_toosmall = false;
-        bool res = erase_node(rootid, key, value, root_toosmall);
+        bool res = erase_node(rootid, hash, key, value, root_toosmall);
         if (res) { // the criteria for toosmall is different from other nodes
             node root(false);
             node_file.read(root, rootid);
@@ -497,7 +493,8 @@ public:
      * clears found
      */
     void find(const Key& key) {
-        find_node(rootid, key);
+        size_t hash = Hash()(key);
+        find_node(rootid, hash, key);
         if (found.empty()) {
             cout << "null" << endl;
         } else {

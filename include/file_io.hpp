@@ -4,7 +4,7 @@
 #ifndef SJTU_FILE_IO_HPP
 #define SJTU_FILE_IO_HPP
 
-#define BPT_DEBUG_FUNCTIONS
+// #define BPT_DEBUG_FUNCTIONS
 #define BIGTREE
 
 #include <fstream>

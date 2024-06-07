@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/src/test.cpp" "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles/code.dir/src/test.cpp.o"
+  "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/src/code.cpp" "/home/kenyang/Documents/Coding/BigProjects/STLite/TicketSystem(BPT)/code/build/CMakeFiles/code.dir/src/code.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
